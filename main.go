@@ -1,13 +1,15 @@
 package main
 
 import (
+	"fmt"
+
+	// auto load .env file
+	_ "github.com/joho/godotenv/autoload"
+
 	"github.com/cheesycoffee/go-template/config"
-	"github.com/cheesycoffee/go-template/server"
 )
 
 func main() {
-	appConfig := config.New()
-
-	appServer := server.New(appConfig)
-	appServer.Serve()
+	cfg := config.New()
+	fmt.Println(cfg.Env().Server)
 }

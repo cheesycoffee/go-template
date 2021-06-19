@@ -1,0 +1,46 @@
+syntax="proto3";
+package product;
+option go_package = "explicit-go-arch/api/proto/product";
+
+service ProductHandler {
+	rpc GetAllProduct(GetAllProductRequest) returns (GetAllProductResponse);
+	rpc GetDetailProduct(GetDetailProductRequest) returns (ProductModel);
+	rpc CreateProduct(ProductModel) returns (Response);
+	rpc UpdateProduct(ProductModel) returns (Response);
+	rpc DeleteProduct(ProductModel) returns (Response);
+}
+
+message Meta {
+	int64 Limit=1;
+	int64 Page=2;
+	int64 TotalRecords=3;
+	int64 TotalPages=4;
+}
+
+message GetAllProductRequest {
+	int64 Limit=1;
+	int64 Page=2;
+	string Search=3;
+	string OrderBy=4;
+	string Sort=5;
+	bool ShowAll=6;
+}
+
+message GetAllProductResponse {
+	Meta Meta=1;
+	repeated ProductModel Data=2;
+}
+
+message GetDetailProductRequest {
+	string ID=1;
+}
+
+message ProductModel {
+	string ID=1;
+	string CreatedAt=2;
+	string ModifiedAt=3;
+}
+
+message Response {
+	string Message=1;
+}

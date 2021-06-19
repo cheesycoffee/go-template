@@ -3,8 +3,7 @@ package config
 import (
 	"sync"
 
-	"github.com/cheesycoffee/go-template/config/internal/database"
-	"github.com/cheesycoffee/go-template/config/internal/environment"
+	"github.com/cheesycoffee/go-utilities/database"
 )
 
 var (
@@ -14,14 +13,14 @@ var (
 
 type (
 	config struct {
-		env environment.Environment
+		env env
 		db  database.Database
 	}
 
 	// Config application
 	Config interface {
 		DB() database.Database
-		Env() environment.Environment
+		Env() env
 	}
 )
 
@@ -31,12 +30,23 @@ func New() Config {
 	defer mutex.Unlock()
 	if conf == nil {
 		conf = new(config)
-		conf.env = environment.NewEnvironment()
+		conf.env = newEnv()
 		conf.db = database.NewDatabase(database.Option{
-			SQLReadDSN:    conf.env.SQLReadDSN,
-			SQLWriteDSN:   conf.env.SQLWriteDSN,
-			MongoReadURI:  conf.env.MongoReadURI,
-			MongoWriteURI: conf.env.MongoWriteURI,
+			SQLOption: database.SQLOption{
+				ReadDSN:     conf.env.sqlReadDSN,
+				WriteDSN:    conf.env.sqlWriteDSN,
+				MaxIdleConn: conf.env.sqlMaxIdleConn,
+				MaxOpenConn: conf.env.sqlMaxOpenConn,
+				MaxLifeTime: conf.env.sqlMaxLifeTime,
+			},
+			MongoOption: database.MongoOption{
+				ReadURI:  conf.env.mongoReadURI,
+				WriteURI: conf.env.mongoWriteURI,
+			},
+			RedisOption: database.RedisOption{
+				ReadDSN:  conf.env.redisReadDSN,
+				WriteDSN: conf.env.redisWriteDSN,
+			},
 		})
 		return conf
 	}
@@ -47,6 +57,6 @@ func (c *config) DB() database.Database {
 	return c.db
 }
 
-func (c *config) Env() environment.Environment {
+func (c *config) Env() env {
 	return c.env
 }
